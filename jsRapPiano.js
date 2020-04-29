@@ -19,7 +19,8 @@ return this.each(function(){
 			release:0.5,
 			level:0.5
 		},
-		onClick:null
+		onClick:null,
+		highlightMiddleC:false,
 	},options);
 	let base = this;
 	let AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -31,7 +32,8 @@ return this.each(function(){
 	this.oscillator.start(0);
 	this.oscillator.type = this.opt.waveType;
 	this.oscillator.frequency.value = 50;
-	
+	this.highlightMiddleC = this.opt.highlightMiddleC;
+
 	this.Render = function(){
 		$(this).empty();
 		let w = $(this).width();
@@ -41,7 +43,11 @@ return this.each(function(){
 		for(let o = 0;o < this.opt.octaves;o++)
 			for(let x = 0;x < 7;x++){
 				let k = $('<div>').addClass('divKey').css({width:w}).appendTo(this);
-				$('<div>').addClass('major').prop('index',i++).appendTo(k);
+				let majorDiv = $('<div>').addClass('major');
+				if (this.highlightMiddleC && i == 60) {
+					majorDiv.addClass('middleC');
+				}
+				majorDiv.prop('index',i++).appendTo(k);
 				if((x % 7 == 2) || (x % 7 == 6))continue;
 				$('<div>').addClass('minor').prop('index',i++).appendTo(k);
 			}
@@ -51,7 +57,7 @@ return this.each(function(){
 				let f =440 * Math.pow(2,(i - 69) / 12);
 				base.PlaySound(f);
 				if(base.opt.onClick)
-					base.opt.onClick.call(base);
+					base.opt.onClick.call(base, i);
 			}
 		});	
 	}
